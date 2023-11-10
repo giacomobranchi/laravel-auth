@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ProjectsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Project;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,14 +18,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $projects = Project::all();
+    return view('welcome', compact('projects'));
 });
 
-/* Route::get('/dashboard', function () {
+/* Route::get('/dashboard', function () {s
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); */
 Route::middleware('auth', 'verified')->name('admin.')->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('projects/restore/{id}', [ProjectsController::class, 'restore'])->name('projects.restore');
+    Route::get('projects/forceDelete/{id}', [ProjectsController::class, 'forceDelete'])->name('projects.forceDelete');
+    Route::get('projects/recycle', [ProjectsController::class, 'recycle'])->name('projects.recycle');
+    Route::get('projects/recycle/{id}', [ProjectsController::class, 'showTrashed'])->name('projects.showTrashed');
     Route::resource('projects', ProjectsController::class);
 });
 
